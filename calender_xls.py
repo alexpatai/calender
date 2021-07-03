@@ -1,7 +1,10 @@
+import webbrowser
 import pandas
 from datetime import date, datetime
 from crawler import *
 from difflib import get_close_matches
+from tkinter import *
+import xlrd
 
 calender_file = "Termine_02_07_2021.xls"
 read_data = pandas.read_excel(calender_file)
@@ -72,6 +75,10 @@ def place_course_details_into_dataset(next_event, pairs):
     return pairs
 
 
+def callback(link):
+    webbrowser.open(link)
+
+
 subjects_to_come = events_to_come(read_data, today)
 subjects_to_come = correct_names(subjects_to_come)
 next_events = get_next_event(subjects_to_come)
@@ -82,5 +89,22 @@ links = provide_course_link(driver)
 dicts = get_course_name_from_link(driver, links)
 set_of_events = get_next_links(next_events, dicts)
 set_of_events = place_course_details_into_dataset(next_events, set_of_events)
-print_subjects(set_of_events)
-driver.close()
+
+root = Tk()
+root.title("Calender")
+root.iconbitmap(r'C:\Users\exelt\Desktop\calender-main\calender-main\Calender.ico')
+course_counter = 1
+for element in set_of_events:
+    frame1 = LabelFrame(root, text='Course ' + str(course_counter), padx=5, pady=5)
+    frame1.pack(padx=10, pady=10)
+    temp = element['Name'][4]
+    element['Name'][4] = element['Name'][0]
+    element['Name'][0] = temp
+    for sub_element in element['Name']:
+        Label(frame1, text=str(sub_element) ).pack()
+    link_element = Label(frame1, text=str(element['Link']), fg="blue", cursor="hand2")
+    link_element.pack()
+    link_element.bind("<Button-1>", lambda e: callback(str(element['Link'])))
+    course_counter += 1
+
+root.mainloop()

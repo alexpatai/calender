@@ -8,7 +8,9 @@ def login():
     passw = cred['moodle_user']['password']
 
     url = 'https://moodle.technikum-wien.at/'
-    driver = webdriver.Chrome(
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    driver = webdriver.Chrome(options=options,
     executable_path=r"C:\Users\exelt\AppData\Local\Programs\Python\Python39\Scripts\chromedriver.exe")
     driver.get(url)
 
